@@ -1,0 +1,41 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '26.0.2'
+    defaultConfig {
+        applicationId "de.nsvb.android.auto.widget"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "0.1.0"
+    }
+
+    ext{
+        APP_NAME = "@string/app_name"
+    }
+
+    buildTypes {
+
+        debug {
+            manifestPlaceholders = [appName: "W4A [DEBUG]"]
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
+        }
+
+        release {
+            manifestPlaceholders = [appName: APP_NAME]
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.android.support:cardview-v7:27.0.2'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:design:27.0.2'
+    compile 'com.github.martoreto:aauto-sdk:v4.6'
+}

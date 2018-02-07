@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="car_primary">@color/car_body1</color>
+    <color name="car_accent">@color/car_red_700</color>
+
+    <color name="car_body1_inverted">@color/car_body1_light</color>
+    <color name="cardview_background">@color/cardview_light_background</color>
+</resources>
