@@ -8,13 +8,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
-import com.github.martoreto.aademo.R;
 
 /**
  * Created by ns130291 on 27.01.2018.
@@ -31,6 +31,7 @@ public class WidgetFragment extends CarFragment {
     private AppWidgetHostView mHostView;
 
     private int widgetID = -1;
+    private boolean fullscreen = false;
 
     public WidgetFragment(){
         setTitle("WidgetViewer");
@@ -41,6 +42,9 @@ public class WidgetFragment extends CarFragment {
         super.onAttach(context);
 
         Log.d(TAG, "onAttach");
+
+        fullscreen = context.getSharedPreferences(ConfigurationActivity.PREFS_NAME, Context.MODE_PRIVATE)
+                .getBoolean(getString(R.string.key_fullscreen_switch), false);
 
         mAppWidgetManager = AppWidgetManager.getInstance(context);
         mAppWidgetHost = new AppWidgetHost(context, 123456);
@@ -55,6 +59,12 @@ public class WidgetFragment extends CarFragment {
         View view = inflater.inflate(R.layout.fragment_widget, container, false);
 
         mWidgetContainer = view.findViewById(R.id.widget_container);
+        if(fullscreen) {
+            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mWidgetContainer.getLayoutParams();
+            layoutParams.setMargins(0,
+                    (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16,
+                            getResources().getDisplayMetrics()), 0, 0);
+        }
 
         /*int widgetID = getActivity().getPreferences(Context.MODE_PRIVATE).getInt(ConfigurationActivity.WIDGET_ID, -1);
         if(widgetID != -1) {

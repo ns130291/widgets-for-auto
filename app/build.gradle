@@ -7,11 +7,11 @@ android {
         applicationId "de.nsvb.android.auto.widget"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 1
-        versionName "0.1.0"
+        versionCode 2
+        versionName "0.2.0"
     }
 
-    ext{
+    ext {
         APP_NAME = "@string/app_name"
     }
 
@@ -32,6 +32,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.android.support:support-v4:27.0.2'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:27.0.2'
     compile 'com.android.support:cardview-v7:27.0.2'

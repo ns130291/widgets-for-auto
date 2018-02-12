@@ -19,8 +19,6 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
-import com.github.martoreto.aademo.R;
-
 /**
  * Created by ns130291 on 27.01.2018.
  */
@@ -127,6 +125,9 @@ public class ConfigurationActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class));
                 break;

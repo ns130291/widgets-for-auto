@@ -1,11 +1,12 @@
 package de.nsvb.android.auto.widget;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 
-import com.github.martoreto.aademo.R;
 import com.google.android.apps.auto.sdk.CarActivity;
 import com.google.android.apps.auto.sdk.CarUiController;
 import com.google.android.apps.auto.sdk.StatusBarController;
@@ -60,6 +61,13 @@ public class MainCarActivity extends CarActivity {
         //statusBarController.setAppBarAlpha(1f);
         //statusBarController.setAppBarBackgroundColor(getResources().getColor(R.color.car_accent));
         statusBarController.setTitle(getResources().getText(R.string.app_name));
+
+        boolean fullscreen = getSharedPreferences(ConfigurationActivity.PREFS_NAME, Context.MODE_PRIVATE)
+                .getBoolean(getString(R.string.key_fullscreen_switch), false);
+        Log.d(TAG, "fullscreen=" + fullscreen);
+        if(fullscreen) {
+            statusBarController.hideAppHeader();
+        }
     }
 
     @Override

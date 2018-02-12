@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name="de.nsvb.android.auto.widget.CarService"
+            android:name=".CarService"
             android:label="@string/car_service_name"
             tools:ignore="ExportedService">
             <intent-filter>
@@ -23,7 +23,7 @@
         </service>
 
         <activity
-            android:name="de.nsvb.android.auto.widget.ConfigurationActivity"
+            android:name=".ConfigurationActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,10 +37,18 @@
             android:resource="@xml/automotive_app_desc" />
 
         <activity
-            android:name="de.nsvb.android.auto.widget.AboutActivity"
+            android:name=".AboutActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName="de.nsvb.android.auto.widget.ConfigurationActivity"
+            android:parentActivityName=".ConfigurationActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.nsvb.android.auto.widget.ConfigurationActivity" />
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".ConfigurationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.nsvb.android.auto.widget.ConfigurationActivity" />
