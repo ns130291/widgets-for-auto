@@ -1,7 +1,7 @@
 package de.nsvb.android.auto.widget;
 
-import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
 
 public class CarFragment extends Fragment {
     private String mTitle;

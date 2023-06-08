@@ -5,19 +5,23 @@ import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Handler;
+import android.os.UserHandle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 import android.widget.Toolbar;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 /**
  * Created by ns130291 on 27.01.2018.
@@ -29,6 +33,7 @@ public class ConfigurationActivity extends Activity {
 
     public static final int REQUEST_PICK_APPWIDGET = 0;
     public static final int REQUEST_CREATE_APPWIDGET = 1;
+    private static final int REQUEST_APPWIDGET_BOUND = 2;
     public static final String WIDGET_ID = "widget_id";
     public static final String PREFS_NAME = "widgetviewer";
 
@@ -39,6 +44,8 @@ public class ConfigurationActivity extends Activity {
     private AppWidgetHost mAppWidgetHost;
 
     private int widgetID = -1;
+    // workaround for Samsung widgets which after configure deliver no intent data
+    private int requestedAppWidgetID = -1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,22 +103,46 @@ public class ConfigurationActivity extends Activity {
     }
 
     public void selectWidget() {
-        int appWidgetId = mAppWidgetHost.allocateAppWidgetId();
-        Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
-        pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        requestedAppWidgetID = mAppWidgetHost.allocateAppWidgetId();
+        Intent pickIntent = new Intent(this, PickAppWidgetActivity.class);
+        pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, requestedAppWidgetID);
         startActivityForResult(pickIntent, REQUEST_PICK_APPWIDGET);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_PICK_APPWIDGET || requestCode == REQUEST_CREATE_APPWIDGET) {
+        Log.d(TAG, "onActivityResult resultCode=" + resultCode + " requestCode=" + requestCode);
+        if(requestCode == REQUEST_PICK_APPWIDGET || requestCode == REQUEST_CREATE_APPWIDGET || requestCode == REQUEST_APPWIDGET_BOUND) {
             if(resultCode == RESULT_OK) {
+                Log.d(TAG, "RESULT_OK");
                 if(requestCode == REQUEST_PICK_APPWIDGET) {
-                    configureWidget(data);
+                    Log.d(TAG, "REQUEST_PICK_APPWIDGET");
+                    if (data != null) {
+                        if (!data.getBooleanExtra(PickAppWidgetActivity.EXTRA_WIDGET_BIND_ALLOWED, false)) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                requestBindWidget(data);
+                            } else {
+                                configureWidget(data);
+                            }
+                        } else {
+                            configureWidget(data);
+                        }
+                    } else {
+                        Log.i(TAG, "Widget picker failed");
+                    }
+                } else if(requestCode == REQUEST_APPWIDGET_BOUND) {
+                    Log.d(TAG, "REQUEST_APPWIDGET_BOUND");
+                    if (data != null) {
+                        configureWidget(data);
+                    } else {
+                        Log.i(TAG, "Widget bind failed");
+                    }
                 } else {
+                    Log.d(TAG, "create widget");
                     createWidget(data);
                 }
             } else {
+                requestedAppWidgetID = -1;
                 if (data != null) {
                     int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
                     if (appWidgetId != -1) {
@@ -141,30 +172,63 @@ public class ConfigurationActivity extends Activity {
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void requestBindWidget(@NonNull Intent data) {
+        final int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+        if (requestedAppWidgetID != appWidgetId) {
+            requestedAppWidgetID = appWidgetId;
+        }
+        final ComponentName provider = data.getParcelableExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER);
+        final UserHandle profile;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            profile = data.getParcelableExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER_PROFILE);
+        } else {
+            profile = null;
+        }
+
+        new Handler().postDelayed(() -> {
+            Log.d(TAG, "asking for permission");
+
+            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER_PROFILE, profile);
+            }
+
+            startActivityForResult(intent, REQUEST_APPWIDGET_BOUND);
+        }, 500);
+    }
+
     /**
      * Checks if the widget needs any configuration. If it needs, launches the
      * configuration activity.
      */
     private void configureWidget(Intent data) {
-        Bundle extras = data.getExtras();
-        int appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+        int appWidgetId = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+        if (requestedAppWidgetID != appWidgetId) {
+            requestedAppWidgetID = appWidgetId;
+        }
         AppWidgetProviderInfo appWidgetInfo = mAppWidgetManager.getAppWidgetInfo(appWidgetId);
         if (appWidgetInfo.configure != null) {
-            //Toast.makeText(this, "Configure is not supported", Toast.LENGTH_SHORT).show();
-            //removeWidget();
-            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
-            intent.setComponent(appWidgetInfo.configure);
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-            startActivityForResult(intent, REQUEST_CREATE_APPWIDGET);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mAppWidgetHost.startAppWidgetConfigureActivityForResult(this, appWidgetId, 0, REQUEST_CREATE_APPWIDGET, null);
+            } else {
+                Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
+                intent.setComponent(appWidgetInfo.configure);
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+                startActivityForResult(intent, REQUEST_CREATE_APPWIDGET);
+            }
         } else {
             createWidget(data);
         }
     }
 
     public void createWidget(Intent data) {
-        Bundle extras = data.getExtras();
-
-        widgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+        if (data != null) {
+            requestedAppWidgetID = data.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+        }
+        widgetID = requestedAppWidgetID;
         getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putInt(WIDGET_ID, widgetID).commit();
         createWidget(widgetID);
     }
@@ -180,9 +244,9 @@ public class ConfigurationActivity extends Activity {
 
         mWidgetContainer.addView(hostView);
 
-        //mButtonAddWidget.setEnabled(false);
         mButtonAddWidget.setText("Remove Widget");
 
+        requestedAppWidgetID = -1;
         Log.i(TAG, "The widget size is: " + appWidgetInfo.minWidth + "*" + appWidgetInfo.minHeight);
     }
 

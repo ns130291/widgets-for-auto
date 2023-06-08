@@ -2,7 +2,8 @@ package de.nsvb.android.auto.widget;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by ns130291 on 12.02.2018.

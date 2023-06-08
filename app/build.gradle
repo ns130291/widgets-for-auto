@@ -1,14 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 33
     defaultConfig {
         applicationId "de.nsvb.android.auto.widget"
         minSdkVersion 21
-        targetSdkVersion 27
-        versionCode 2
-        versionName "0.2.0"
+        targetSdkVersion 33
+        versionCode 3
+        versionName "0.2.1"
     }
 
     ext {
@@ -29,14 +28,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'de.nsvb.android.auto.widget'
 }
 
 dependencies {
-    implementation 'com.android.support:support-v4:27.0.2'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:27.0.2'
-    compile 'com.android.support:cardview-v7:27.0.2'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:design:27.0.2'
-    compile 'com.github.martoreto:aauto-sdk:v4.6'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation "androidx.annotation:annotation:1.6.0"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.0.0'
+
+    implementation 'com.github.martoreto:aauto-sdk:v4.6'
 }

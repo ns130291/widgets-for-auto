@@ -1,8 +1,9 @@
 package de.nsvb.android.auto.widget;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
@@ -22,7 +23,9 @@ public class AboutActivity extends AppCompatActivity {
                 "aauto-sdk-demo by martoreto<br>" +
                 "<a href=\"https://github.com/martoreto/aauto-sdk-demo\">https://github.com/martoreto/aauto-sdk-demo</a><br><br>" +
                 "Widget Host Example by Leonardo Fischer<br>" +
-                "<a href=\"https://github.com/lgfischer/WidgetHostExample\">https://github.com/lgfischer/WidgetHostExample</a>"));
+                "<a href=\"https://github.com/lgfischer/WidgetHostExample\">https://github.com/lgfischer/WidgetHostExample</a>" +
+                "KISS by Neamar<br>" +
+                "<a href=\"https://github.com/Neamar/KISS\">https://github.com/Neamar/KISS</a>"));
         tv.setMovementMethod(LinkMovementMethod.getInstance());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
