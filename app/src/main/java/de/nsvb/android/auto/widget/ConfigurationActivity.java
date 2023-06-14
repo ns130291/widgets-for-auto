@@ -83,23 +83,23 @@ public class ConfigurationActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mAppWidgetHost.startListening();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        mAppWidgetHost.stopListening();
+    protected void onStart() {
+        super.onStart();
+        try {
+            mAppWidgetHost.startListening();
+        } catch (Exception e) {
+            Log.e(TAG, "couldn't start listening for widget updates:", e);
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
-
+        try {
+            mAppWidgetHost.stopListening();
+        } catch (Exception e) {
+            Log.w(TAG, "couldn't stop listening for widget updates:", e);
+        }
     }
 
     public void selectWidget() {

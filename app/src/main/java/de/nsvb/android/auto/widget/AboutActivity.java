@@ -23,7 +23,7 @@ public class AboutActivity extends AppCompatActivity {
                 "aauto-sdk-demo by martoreto<br>" +
                 "<a href=\"https://github.com/martoreto/aauto-sdk-demo\">https://github.com/martoreto/aauto-sdk-demo</a><br><br>" +
                 "Widget Host Example by Leonardo Fischer<br>" +
-                "<a href=\"https://github.com/lgfischer/WidgetHostExample\">https://github.com/lgfischer/WidgetHostExample</a>" +
+                "<a href=\"https://github.com/lgfischer/WidgetHostExample\">https://github.com/lgfischer/WidgetHostExample</a><br><br>" +
                 "KISS by Neamar<br>" +
                 "<a href=\"https://github.com/Neamar/KISS\">https://github.com/Neamar/KISS</a>"));
         tv.setMovementMethod(LinkMovementMethod.getInstance());
