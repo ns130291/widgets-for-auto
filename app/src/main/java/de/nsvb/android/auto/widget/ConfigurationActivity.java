@@ -238,16 +238,24 @@ public class ConfigurationActivity extends Activity {
      */
     public void createWidget(int appWidgetId) {
         AppWidgetProviderInfo appWidgetInfo = mAppWidgetManager.getAppWidgetInfo(appWidgetId);
+        if (appWidgetInfo != null) {
+            AppWidgetHostView hostView = mAppWidgetHost.createView(this, appWidgetId, appWidgetInfo);
+            hostView.setAppWidget(appWidgetId, appWidgetInfo);
 
-        AppWidgetHostView hostView = mAppWidgetHost.createView(this, appWidgetId, appWidgetInfo);
-        hostView.setAppWidget(appWidgetId, appWidgetInfo);
+            mWidgetContainer.addView(hostView);
 
-        mWidgetContainer.addView(hostView);
+            mButtonAddWidget.setText("Remove Widget");
 
-        mButtonAddWidget.setText("Remove Widget");
-
-        requestedAppWidgetID = -1;
-        Log.i(TAG, "The widget size is: " + appWidgetInfo.minWidth + "*" + appWidgetInfo.minHeight);
+            requestedAppWidgetID = -1;
+            Log.i(TAG, "The widget size is: " + appWidgetInfo.minWidth + "*" + appWidgetInfo.minHeight);
+        } else {
+            Log.e(TAG, "Failed to create widget view for widgetId " + appWidgetId);
+            mAppWidgetHost.deleteAppWidgetId(appWidgetId);
+            if (widgetID == appWidgetId) {
+                widgetID = -1;
+                getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putInt(WIDGET_ID, widgetID).commit();
+            }
+        }
     }
 
     public void removeWidget() {
